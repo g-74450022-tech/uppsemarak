@@ -981,6 +981,7 @@ function avatar(nama, size, color) {
 }
 function renderChart(rows) {
     const box = byId('org-chart'); if (!box || !rows || !rows.length) return;
+    window.JK_ROWS = rows;
     const by = b => rows.filter(r => (r.bahagian || '').toLowerCase() === b && r.nama);
     const big = (r, color, size) => `<div class="flex flex-col items-center text-center">${avatar(r.nama, size, color)}<span class="mt-2 text-[9px] font-bold px-2.5 py-0.5 rounded-full text-white uppercase tracking-wider" style="background:${color}">${esc(r.jawatan)}</span><h4 class="font-extrabold text-slate-900 text-xs mt-1">${esc(r.nama)}</h4>${r.catatan ? `<p class="text-[10px] text-slate-500 font-medium">${esc(r.catatan)}</p>` : ''}<div class="w-0.5 h-4 bg-slate-300 mt-2"></div></div>`;
     let html = '';
@@ -1002,7 +1003,7 @@ function renderChart(rows) {
     if (html) box.innerHTML = html;
 }
 
-function renderAll() { renderChart(DEFAULT_JK); renderAnn(); renderTakwim(); renderDuty(); updateSPMCountdown(); updateDalamanCountdown(); }
+function renderAll() { try { renderChart(window.JK_ROWS || DEFAULT_JK); } catch (e) { console.error('Carta:', e); } renderAnn(); renderTakwim(); renderDuty(); updateSPMCountdown(); updateDalamanCountdown(); }
 async function loadSheetData() {
     if (!SHEET_ID && !SHEET_PUB_URL) return;
     const jobs = [['takwim', applyTakwim], ['guru', applyGuru], ['jawatankuasa', renderChart], ['pautan', applyPautan], ['tetapan', applyTetapan]];
@@ -1055,11 +1056,11 @@ window.addEventListener('message', ev => {
     w.document.open();
     w.document.write('<!DOCTYPE html><html lang="ms"><head><meta charset="utf-8"><title>Cover Page Kertas Soalan</title>' + ev.data.css +
         '<style>body{margin:0;background:#fff}</style></head><body><div style="display:flex;justify-content:center">' + ev.data.page +
-        '</div><script>window.addEventListener("load",function(){setTimeout(function(){window.focus();window.print();},500);});<\/script><script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
-</body></html>');
+        '</div><script>window.addEventListener("load",function(){setTimeout(function(){window.focus();window.print();},500);});<\/script></body></html>');
     w.document.close();
 });
 
 </script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>
